@@ -1,10 +1,11 @@
-import { Schema, model, models, Types } from "mongoose";
+import { Schema, model, models, InferSchemaType } from "mongoose";
+
 const Question = new Schema(
 	{
 		text: { type: String, required: true },
-		options: { type: [String], validate: (v) => v.length >= 2, required: true },
-		correctIndex: { type: Number, required: true, min: 0 },
-		imageKey: { type: String },
+		options: { type: [String], required: true },
+		correctIndex: { type: Number, required: true },
+		imageKey: String,
 	},
 	{ _id: false }
 );
@@ -12,9 +13,9 @@ const Question = new Schema(
 const QuizSchema = new Schema(
 	{
 		ownerId: { type: String, required: true },
-		title: { type: String, required: true, trim: true },
-		description: { type: String, default: "" },
-		courseId: { type: Types.ObjectId, ref: "Course", required: true },
+		title: { type: String, required: true },
+		description: String,
+		courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
 		year: { type: String, enum: ["Y1", "Y2", "Y3"], required: true },
 		visibility: {
 			type: String,
@@ -25,6 +26,6 @@ const QuizSchema = new Schema(
 	},
 	{ timestamps: true }
 );
-QuizSchema.index({ visibility: 1, year: 1, createdAt: -1 });
-QuizSchema.index({ ownerId: 1, createdAt: -1 });
-export default models.Quiz || model("Quiz", QuizSchema);
+
+export type QuizDoc = InferSchemaType<typeof QuizSchema>;
+export default models.Quiz || model<QuizDoc>("Quiz", QuizSchema);
