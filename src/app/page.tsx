@@ -1,10 +1,45 @@
 "use client";
 
+/**
+ * 🏠 HOME PAGE (Client Component)
+ *
+ * KEY CONCEPT: Client Components
+ * - Use "use client" when you need interactivity
+ * - Can use hooks like useState, useEffect
+ * - Needed for components like TrueFocus that have animations
+ *
+ * We use "use client" because:
+ * - TrueFocus component needs client-side animations
+ * - We'll fetch data with useEffect
+ */
+
 import { Navigation } from "@/components/Navigation";
 import QuizCard from "@/components/QuizCard";
 import TrueFocus from "@/components/TrueFocus";
+import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function Home() {
+	const [quizzes, setQuizzes] = useState<any[]>([]);
+	const [loading, setLoading] = useState(true);
+
+	// Fetch quizzes on component mount
+	useEffect(() => {
+		async function fetchQuizzes() {
+			try {
+				const res = await fetch("/api/quizzes?limit=6");
+				if (res.ok) {
+					const data = await res.json();
+					setQuizzes(data.quizzes || []);
+				}
+			} catch (error) {
+				console.error("Failed to fetch quizzes:", error);
+			} finally {
+				setLoading(false);
+			}
+		}
+		fetchQuizzes();
+	}, []);
 	return (
 		<div className="relative min-h-screen bg-[#111111] text-white">
 			<div
@@ -71,12 +106,38 @@ export default function Home() {
 
 			{/* Popular */}
 			<section id="popular" className="mx-auto max-w-6xl px-4 pb-24">
-				<h2 className="text-2xl font-bold">Popular quizzes</h2>
-				<div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-					{Array.from({ length: 3 }).map((_, i) => (
-						<QuizCard key={i} />
-					))}
+				<div className="flex items-center justify-between mb-8">
+					<h2 className="text-2xl font-bold">Popular quizzes</h2>
+					<Link
+						href="/quizzes/create"
+						className="rounded-full bg-purple-600 px-5 py-2 text-sm font-semibold text-white hover:bg-purple-700 transition"
+					>
+						Create Quiz
+					</Link>
 				</div>
+
+				{/* Quiz Grid */}
+				{loading ? (
+					<div className="text-center py-16">
+						<p className="text-white/60 text-lg">Loading quizzes...</p>
+					</div>
+				) : quizzes.length > 0 ? (
+					<div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						{quizzes.map((quiz: any) => (
+							<QuizCard key={quiz._id} quiz={quiz} />
+						))}
+					</div>
+				) : (
+					<div className="text-center py-16">
+						<p className="text-white/60 text-lg mb-4">No quizzes yet</p>
+						<Link
+							href="/quizzes/create"
+							className="inline-block rounded-full bg-purple-600 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-700 transition"
+						>
+							Create the first quiz!
+						</Link>
+					</div>
+				)}
 			</section>
 
 			{/* Footer */}

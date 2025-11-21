@@ -2,7 +2,7 @@ import { Schema, model, models, Document, Types } from "mongoose";
 
 /**
  * 📝 QUESTION SCHEMA
- * 
+ *
  * Each question in a quiz has:
  * - text: The question itself
  * - options: Array of possible answers (e.g., ["A", "B", "C", "D"])
@@ -38,7 +38,7 @@ const QuestionSchema = new Schema({
 
 /**
  * 🎯 QUIZ INTERFACE (TypeScript)
- * 
+ *
  * Defines the shape of a Quiz document
  * Document = adds MongoDB fields like _id, createdAt, etc.
  */
@@ -60,7 +60,7 @@ export interface IQuiz extends Document {
 
 /**
  * 🏗️ QUIZ SCHEMA (Database Structure)
- * 
+ *
  * This defines:
  * - What fields exist
  * - Validation rules
@@ -121,7 +121,7 @@ const QuizSchema = new Schema<IQuiz>(
 
 /**
  * ⚙️ PRE-SAVE HOOK (runs before saving)
- * 
+ *
  * VALIDATION: Ensure correctIndex is valid for each question
  * WHY: Mongoose can't validate across fields in schema
  */
@@ -140,7 +140,7 @@ QuizSchema.pre("save", function (next) {
 
 /**
  * 📊 INDEXES FOR PERFORMANCE
- * 
+ *
  * Compound index: Find quizzes by owner AND visibility quickly
  * Use case: "Show me all MY public quizzes"
  */
