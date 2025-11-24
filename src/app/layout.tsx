@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "ReachMe - Learn Together",
+	title: "MctQuiz - Learn Together",
 	description: "Create and share quizzes with your peers",
 };
 
