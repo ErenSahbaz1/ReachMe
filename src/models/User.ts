@@ -9,7 +9,7 @@ import { Schema, model, models, Document } from "mongoose";
 export interface IUser extends Document {
 	email: string;
 	name: string;
-	passwordHash: string; // NEVER store plain passwords!
+	passwordHash?: string; // Optional - OAuth users won't have passwords
 	role: "user" | "admin";
 	createdAt: Date;
 	updatedAt: Date;
@@ -39,8 +39,8 @@ const UserSchema = new Schema<IUser>(
 		},
 		passwordHash: {
 			type: String,
-			required: [true, "Password hash is required"],
-			select: false, // 🔒 SECURITY: Don't include in queries by default
+			required: false, // Optional for OAuth users (Google, etc.)
+			select: false, // SECURITY: Don't include in queries by default
 			// You must explicitly ask: User.findOne().select('+passwordHash')
 		},
 		role: {
@@ -53,13 +53,13 @@ const UserSchema = new Schema<IUser>(
 		},
 	},
 	{
-		// 3️⃣ Timestamps automatically add createdAt and updatedAt
+		// Timestamps automatically add createdAt and updatedAt
 		timestamps: true,
 	}
 );
 
 /**
- * 4️⃣ Indexes for performance
+ * Indexes for performance
  *
  * WHY: Queries on 'email' will be instant (even with millions of users)
  * The unique: true above creates an index automatically
@@ -68,7 +68,7 @@ const UserSchema = new Schema<IUser>(
 UserSchema.index({ role: 1 }); // If you query by role often
 
 /**
- * 5️⃣ Export the model with Next.js hot-reload handling
+ * Export the model with Next.js hot-reload handling
  *
  * PROBLEM: In dev, Next.js reloads modules → tries to create model again → crash
  * SOLUTION: Check if model already exists in mongoose.models
