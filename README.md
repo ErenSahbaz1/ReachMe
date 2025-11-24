@@ -118,11 +118,6 @@ Open [http://localhost:3000](http://localhost:3000) to see your app! 🎉
 5. Replace `<password>` with your database password
 6. Replace `<database>` with your database name (e.g., `reachme`)
 
-**Example**:
-
-```env
-MONGODB_URI=mongodb+srv://myuser:mypassword123@cluster0.abc123.mongodb.net/reachme?retryWrites=true&w=majority
-```
 
 #### `NEXTAUTH_SECRET`
 
