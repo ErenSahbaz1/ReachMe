@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { requireAuth } from "@/lib/auth-helpers";
 import { extractText } from "unpdf";
-
+//test
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(request: Request) {
@@ -86,7 +86,6 @@ export async function POST(request: Request) {
 			);
 		}
 
-		
 		if (content.length > 100000) {
 			content = content.substring(0, 100000);
 		}
