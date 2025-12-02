@@ -39,7 +39,7 @@ export default function QuizDetailPage() {
 	const params = useParams();
 	const router = useRouter();
 	const quizId = params.id as string;
-
+	const [aiExplanation, setAiExplanation] = useState("");
 	// State
 	const [quiz, setQuiz] = useState<Quiz | null>(null);
 	const [loading, setLoading] = useState(true);

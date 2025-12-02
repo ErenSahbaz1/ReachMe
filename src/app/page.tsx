@@ -15,7 +15,6 @@
 
 import { Navigation } from "@/components/Navigation";
 import QuizCard from "@/components/QuizCard";
-import TrueFocus from "@/components/TrueFocus";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
@@ -42,42 +41,14 @@ export default function Home() {
 	}, []);
 	return (
 		<div className="relative min-h-screen bg-[#111111] text-white">
-			<div
-				className="absolute -z-10 left-1/4 top-12 w-[480px] h-[480px] rounded-full opacity-70 blur-3xl"
-				style={{
-					background:
-						"radial-gradient(circle, #FF446D 0%, rgba(255,68,109,0.25) 40%, transparent 70%)",
-				}}
-			/>
-			<div
-				className="absolute -z-20 right-0 top-40 w-[360px] h-[360px] rounded-full opacity-60 blur-2xl"
-				style={{
-					background:
-						"radial-gradient(circle, #7C3AED 0%, rgba(124,58,237,0.2) 40%, transparent 70%)",
-				}}
-			/>
-			<div
-				className="absolute -z-30 left-[-80px] bottom-20 w-[520px] h-[520px] rounded-full opacity-50 blur-3xl"
-				style={{
-					background:
-						"radial-gradient(circle, #06B6D4 0%, rgba(6,182,212,0.12) 40%, transparent 70%)",
-				}}
-			/>
 			{/* Nav */}
 			<Navigation />
 
 			{/* Hero */}
 			<section className="mx-auto max-w-6xl px-4 py-30 ">
-				<div>
-					<p className="text-[#FF446D] font-bold text-xl">Learn alone</p>
-					<TrueFocus
-						sentence="Or Together"
-						manualMode={false}
-						blurAmount={9}
-						borderColor="red"
-						animationDuration={2}
-						pauseBetweenAnimations={1}
-					/>
+				<div className="flex flex-col items-center pb-13">
+					<p className="text-[#FF446D] font-bold text-xl">Learn</p>
+					<h1 className="text-8xl font-black pb-6">Better with MctQ</h1>
 					<p className="mt-4 max-w-xl text-base text-white/70">
 						Learn together by making quizzes for each other.
 					</p>
