@@ -39,8 +39,12 @@ export default function QuizDetailPage() {
 	const params = useParams();
 	const router = useRouter();
 	const quizId = params.id as string;
-	const [aiExplanation, setAiExplanation] = useState("");
-	// State
+	const [aiExplanations, setAiExplanations] = useState<{
+		[key: number]: string;
+	}>({});
+	const [loadingExplanation, setLoadingExplanation] = useState<number | null>(
+		null
+	);
 	const [quiz, setQuiz] = useState<Quiz | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
@@ -73,6 +77,45 @@ export default function QuizDetailPage() {
 		}
 		fetchQuiz();
 	}, [quizId]);
+
+	async function explainWithAI(questionIndex: number) {
+		// Prevent multiple clicks
+		if (loadingExplanation === questionIndex || aiExplanations[questionIndex])
+			return;
+
+		setLoadingExplanation(questionIndex);
+
+		try {
+			const question = quiz!.questions[questionIndex];
+			const userAnswer = userAnswers[questionIndex];
+
+			const res = await fetch("/api/ai/explain", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					questionText: question.text,
+					options: question.options,
+					correctIndex: question.correctIndex,
+					userAnswer: userAnswer,
+				}),
+			});
+
+			const data = await res.json();
+
+			if (res.ok) {
+				setAiExplanations((prev) => ({
+					...prev,
+					[questionIndex]: data.explanation,
+				}));
+			} else {
+				alert("Failed to get explanation: " + data.error);
+			}
+		} catch (error) {
+			console.error("Error fetching explanation:", error);
+		} finally {
+			setLoadingExplanation(null);
+		}
+	}
 
 	/**
 	 * Handle answer selection
@@ -179,28 +222,6 @@ export default function QuizDetailPage() {
 		return (
 			<div className="relative min-h-screen bg-[#111111] py-12 px-4">
 				{/* Background Glows */}
-				<div
-					className="absolute -z-10 left-1/4 top-12 w-[480px] h-[480px] rounded-full opacity-70 blur-3xl pointer-events-none"
-					style={{
-						background:
-							"radial-gradient(circle, #FF446D 0%, rgba(255,68,109,0.25) 40%, transparent 70%)",
-					}}
-				/>
-				<div
-					className="absolute -z-20 right-0 top-40 w-[360px] h-[360px] rounded-full opacity-60 blur-2xl pointer-events-none"
-					style={{
-						background:
-							"radial-gradient(circle, #7C3AED 0%, rgba(124,58,237,0.2) 40%, transparent 70%)",
-					}}
-				/>
-				<div
-					className="absolute -z-30 left-[-80px] bottom-20 w-[520px] h-[520px] rounded-full opacity-50 blur-3xl pointer-events-none"
-					style={{
-						background:
-							"radial-gradient(circle, #06B6D4 0%, rgba(6,182,212,0.12) 40%, transparent 70%)",
-					}}
-				/>
-
 				<div className="max-w-4xl mx-auto relative z-10">
 					{/* Results Card */}
 					<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8 mb-8">
@@ -295,6 +316,35 @@ export default function QuizDetailPage() {
 														<p className="text-sm text-cyan-200">
 															<strong>Explanation:</strong> {q.explanation}
 														</p>
+													</div>
+												)}
+												{!q.explanation && (
+													<div className="mt-4">
+														{!aiExplanations[i] ? (
+															<button
+																onClick={() => explainWithAI(i)}
+																disabled={loadingExplanation === i}
+																className="text-sm flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors disabled:opacity-50"
+															>
+																{loadingExplanation === i ? (
+																	<>
+																		<div className="w-4 h-4 border-2 border-purple-400 border-t-transparent rounded-full animate-spin" />
+																		Asking AI...
+																	</>
+																) : (
+																	<>Why is this correct? (Ask AI)</>
+																)}
+															</button>
+														) : (
+															<div className="p-4 bg-purple-500/10 border border-purple-500/30 rounded-xl animate-in fade-in slide-in-from-top-2">
+																<p className="text-sm text-purple-200">
+																	<span className="font-bold">
+																		🤖 AI Tutor:
+																	</span>{" "}
+																	{aiExplanations[i]}
+																</p>
+															</div>
+														)}
 													</div>
 												)}
 											</div>

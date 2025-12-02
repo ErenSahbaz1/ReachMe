@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { requireAuth } from "@/lib/auth-helpers";
+import { extractText } from "unpdf";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -22,34 +23,72 @@ export async function POST(request: Request) {
 
 	try {
 		//PARSE REQUEST BODY
-		const body = await request.json();
-		const { content, questionCount = 5, difficulty = "medium" } = body;
+		const formData = await request.formData();
+		const file = formData.get("file") as File | null;
+		let content = formData.get("content") as string;
+		const questionCount =
+			parseInt(formData.get("questionCount") as string) || 5;
+		const difficulty = (formData.get("difficulty") as string) || "medium";
+
+		// Handle PDF file if present
+		if (file) {
+			try {
+				console.log("Processing PDF file:", file.name, file.size, "bytes");
+				const arrayBuffer = await file.arrayBuffer();
+				const uint8Array = new Uint8Array(arrayBuffer);
+
+				console.log("Extracting text from PDF...");
+				const data = await extractText(uint8Array);
+				content = Array.isArray(data.text) ? data.text.join("\n\n") : data.text;
+				console.log("PDF text extracted, length:", content.length);
+			} catch (error) {
+				console.error("PDF parsing error details:", error);
+				console.error(
+					"Error type:",
+					error instanceof Error ? error.constructor.name : typeof error
+				);
+				console.error(
+					"Error message:",
+					error instanceof Error ? error.message : String(error)
+				);
+				return NextResponse.json(
+					{
+						error:
+							"Failed to read PDF file. Make sure it's a valid PDF with extractable text.",
+						details:
+							process.env.NODE_ENV === "development"
+								? error instanceof Error
+									? error.message
+									: String(error)
+								: undefined,
+					},
+					{ status: 400 }
+				);
+			}
+		}
 
 		//VALIDATE INPUT
-		if (!content || typeof content !== "string") {
+		if (!content || typeof content !== "string" || content.trim() === "") {
 			return NextResponse.json(
-				{ error: "Content is required and must be a string" },
+				{ error: "Content is required. Either upload a PDF or enter text." },
 				{ status: 400 }
 			);
 		}
 
-		if (content.length < 100) {
+		if (content.trim().length < 100) {
 			return NextResponse.json(
 				{
-					error: "Content is too short. Please provide at least 100 characters",
+					error: `Content is too short (${
+						content.trim().length
+					} characters). Please provide at least 100 characters or upload a PDF with more content.`,
 				},
 				{ status: 400 }
 			);
 		}
 
-		if (content.length > 50000) {
-			return NextResponse.json(
-				{
-					error:
-						"Content is too long. Please provide less than 50,000 characters",
-				},
-				{ status: 400 }
-			);
+		
+		if (content.length > 100000) {
+			content = content.substring(0, 100000);
 		}
 
 		if (questionCount < 1 || questionCount > 20) {

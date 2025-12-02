@@ -311,7 +311,7 @@ export default function CreateQuizPage() {
 					</div>
 
 					{/* Questions */}
-					<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-sm border border-gray-200">
+					<div className="bg-white/5 backdrop-blur-xl   rounded-3xl p-6 shadow-sm  border-gray-200">
 						<div className="flex items-center justify-between mb-6">
 							<h2 className="text-xl font-bold text-white">Questions</h2>
 							<button
@@ -425,7 +425,7 @@ export default function CreateQuizPage() {
 					<div className="flex justify-end gap-4">
 						<Link
 							href="/"
-							className="px-6 py-3 bg-white/10 border border-white/20 text-white text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition"
+							className="px-6 py-3 bg-white/10 border border-white/20 text-white rounded-lg font-medium hover:bg-gray-50 transition"
 						>
 							Cancel
 						</Link>

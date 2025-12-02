@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -19,6 +18,7 @@ export default function GenerateQuizPage() {
 
 	// Form state
 	const [content, setContent] = useState("");
+	const [file, setFile] = useState<File | null>(null);
 	const [questionCount, setQuestionCount] = useState(5);
 	const [difficulty, setDifficulty] = useState("medium");
 
@@ -51,20 +51,22 @@ export default function GenerateQuizPage() {
 		return null;
 	}
 
-
 	async function handleGenerate() {
 		setError("");
 		setGenerating(true);
 
 		try {
+			const formData = new FormData();
+			formData.append("content", content);
+			formData.append("questionCount", questionCount.toString());
+			formData.append("difficulty", difficulty);
+			if (file) {
+				formData.append("file", file);
+			}
+
 			const res = await fetch("/api/quizzes/generate", {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					content,
-					questionCount,
-					difficulty,
-				}),
+				body: formData,
 			});
 
 			const data = await res.json();
@@ -134,7 +136,6 @@ export default function GenerateQuizPage() {
 		}
 	}
 
-	
 	function handleReset() {
 		setShowPreview(false);
 		setGeneratedQuestions([]);
@@ -144,7 +145,6 @@ export default function GenerateQuizPage() {
 		setError("");
 	}
 
-	
 	function handleEditQuestion(
 		index: number,
 		field: keyof Question,
@@ -155,17 +155,14 @@ export default function GenerateQuizPage() {
 		setGeneratedQuestions(updated);
 	}
 
-	
 	function handleDeleteQuestion(index: number) {
 		const updated = generatedQuestions.filter((_, i) => i !== index);
 		setGeneratedQuestions(updated);
 	}
 
-	
 	if (showPreview) {
 		return (
 			<div className="relative min-h-screen bg-[#111111] py-12 px-4">
-				
 				<div className="max-w-4xl mx-auto relative z-10">
 					{/* Header */}
 					<div className="mb-8">
@@ -377,10 +374,8 @@ export default function GenerateQuizPage() {
 		);
 	}
 
-
 	return (
 		<div className="relative min-h-screen bg-[#111111] py-12 px-4">
-			
 			<div className="max-w-3xl mx-auto relative z-10">
 				{/* Header */}
 				<div className="mb-8">
@@ -401,6 +396,22 @@ export default function GenerateQuizPage() {
 
 				{/* Generation Form */}
 				<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8">
+					{/* File Upload */}
+					<div className="mb-6">
+						<label className="block text-white/90 font-medium mb-2">
+							Upload PDF (Optional)
+						</label>
+						<input
+							type="file"
+							accept=".pdf"
+							onChange={(e) => setFile(e.target.files?.[0] || null)}
+							className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF446D] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF446D] file:text-white hover:file:bg-[#FF446D]/80"
+						/>
+						<p className="text-white/50 text-sm mt-2">
+							Upload a PDF to generate questions from its content.
+						</p>
+					</div>
+
 					{/* Content Input */}
 					<div className="mb-6">
 						<label className="block text-white/90 font-medium mb-2">
@@ -412,10 +423,11 @@ export default function GenerateQuizPage() {
 							placeholder="Paste your course notes, lecture content, or topic description here. The more detailed, the better the questions! (minimum 100 characters)"
 							rows={12}
 							className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF446D] placeholder:text-white/40"
-							required
+							required={!file}
 						/>
 						<p className="text-white/50 text-sm mt-2">
-							{content.length} characters (minimum 100 required)
+							{content.length} characters (minimum 100 required if no PDF
+							uploaded)
 						</p>
 					</div>
 
@@ -472,7 +484,7 @@ export default function GenerateQuizPage() {
 					{/* Generate Button */}
 					<button
 						onClick={handleGenerate}
-						disabled={generating || content.length < 100}
+						disabled={generating || (!file && content.length < 100)}
 						className="w-full bg-[#FF446D] text-white py-4 rounded-lg font-semibold text-lg hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-3"
 					>
 						{generating ? (
