@@ -60,6 +60,11 @@ export const Navigation = () => {
 								</Link>
 							</li>
 							<li>
+								<Link className="text-white/70 hover:text-white" href="/admin">
+									Admin
+								</Link>
+							</li>
+							<li>
 								<button
 									onClick={() => signOut({ callbackUrl: "/" })}
 									className="text-white/70 hover:text-white"
