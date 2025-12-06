@@ -118,8 +118,11 @@ export async function PUT(
 			return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
 		}
 
-		// 5️⃣ CHECK OWNERSHIP
-		if (quiz.ownerId.toString() !== auth.user.id) {
+		// 5️⃣ CHECK OWNERSHIP (allow admins to edit any quiz)
+		const isOwner = quiz.ownerId.toString() === auth.user.id;
+		const isAdmin = auth.user.role === "admin";
+
+		if (!isOwner && !isAdmin) {
 			return NextResponse.json(
 				{ error: "You can only edit your own quizzes" },
 				{ status: 403 }
@@ -186,8 +189,11 @@ export async function DELETE(
 			return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
 		}
 
-		// 4️⃣ CHECK OWNERSHIP
-		if (quiz.ownerId.toString() !== auth.user.id) {
+		// 4️⃣ CHECK OWNERSHIP (allow admins to delete any quiz)
+		const isOwner = quiz.ownerId.toString() === auth.user.id;
+		const isAdmin = auth.user.role === "admin";
+
+		if (!isOwner && !isAdmin) {
 			return NextResponse.json(
 				{ error: "You can only delete your own quizzes" },
 				{ status: 403 }
