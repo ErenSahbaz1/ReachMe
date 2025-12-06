@@ -52,6 +52,14 @@ export const Navigation = () => {
 								</Link>
 							</li>
 							<li>
+								<Link
+									className="text-white/70 hover:text-white"
+									href="/profile"
+								>
+									Profile
+								</Link>
+							</li>
+							<li>
 								<button
 									onClick={() => signOut({ callbackUrl: "/" })}
 									className="text-white/70 hover:text-white"

@@ -18,8 +18,8 @@
  * - Add/remove items dynamically
  */
 
-import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useState, FormEvent, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -32,6 +32,8 @@ interface Question {
 
 export default function CreateQuizPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const editId = searchParams.get("edit");
 	const { data: session, status } = useSession();
 
 	// Form state
@@ -48,7 +50,40 @@ export default function CreateQuizPage() {
 		},
 	]);
 	const [loading, setLoading] = useState(false);
+	const [loadingQuiz, setLoadingQuiz] = useState(false);
 	const [error, setError] = useState("");
+
+	// Load existing quiz if editing
+	useEffect(() => {
+		if (!editId || !session) return;
+
+		async function loadQuiz() {
+			setLoadingQuiz(true);
+			try {
+				const res = await fetch(`/api/quizzes/${editId}`);
+				const data = await res.json();
+
+				if (!res.ok) {
+					setError(data.error || "Failed to load quiz");
+					setLoadingQuiz(false);
+					return;
+				}
+
+				const quiz = data.quiz;
+				setTitle(quiz.title);
+				setDescription(quiz.description || "");
+				setTags(quiz.tags.join(", "));
+				setVisibility(quiz.visibility);
+				setQuestions(quiz.questions);
+				setLoadingQuiz(false);
+			} catch (err) {
+				setError("Failed to load quiz");
+				setLoadingQuiz(false);
+			}
+		}
+
+		loadQuiz();
+	}, [editId, session]);
 
 	// Redirect if not authenticated
 	if (status === "loading") {
@@ -158,9 +193,12 @@ export default function CreateQuizPage() {
 				questions,
 			};
 
-			// POST to API
-			const res = await fetch("/api/quizzes", {
-				method: "POST",
+			// POST or PUT to API
+			const url = editId ? `/api/quizzes/${editId}` : "/api/quizzes";
+			const method = editId ? "PUT" : "POST";
+
+			const res = await fetch(url, {
+				method,
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(payload),
 			});
@@ -168,13 +206,15 @@ export default function CreateQuizPage() {
 			const data = await res.json();
 
 			if (!res.ok) {
-				setError(data.error || "Failed to create quiz");
+				setError(
+					data.error || `Failed to ${editId ? "update" : "create"} quiz`
+				);
 				setLoading(false);
 				return;
 			}
 
 			// Success! Go to the quiz page
-			router.push(`/quizzes/${data.quiz._id}`);
+			router.push(`/quizzes/${editId || data.quiz.id}`);
 		} catch (err) {
 			setError("Something went wrong");
 			setLoading(false);
@@ -210,16 +250,28 @@ export default function CreateQuizPage() {
 				{/* Header */}
 				<div className="mb-8">
 					<Link
-						href="/"
+						href={editId ? "/profile" : "/"}
 						className="text-[#FF446D] hover:brightness-110 text-sm font-medium transition"
 					>
-						â† Back to Home
+						â† Back to {editId ? "Profile" : "Home"}
 					</Link>
-					<h1 className="text-4xl font-bold text-white mt-4">Create Quiz</h1>
+					<h1 className="text-4xl font-bold text-white mt-4">
+						{editId ? "Edit Quiz" : "Create Quiz"}
+					</h1>
 					<p className="text-white/70 mt-2">
-						Create a new quiz for others to learn from
+						{editId
+							? "Update your quiz details and questions"
+							: "Create a new quiz for others to learn from"}
 					</p>
 				</div>
+
+				{/* Loading Quiz State */}
+				{loadingQuiz && (
+					<div className="text-center py-12">
+						<div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF446D]"></div>
+						<p className="text-white/70 mt-4">Loading quiz...</p>
+					</div>
+				)}
 
 				{/* Error */}
 				{error && (
@@ -424,17 +476,23 @@ export default function CreateQuizPage() {
 					{/* Submit */}
 					<div className="flex justify-end gap-4">
 						<Link
-							href="/"
+							href={editId ? "/profile" : "/"}
 							className="px-6 py-3 bg-white/10 border border-white/20 text-white rounded-lg font-medium hover:bg-gray-50 transition"
 						>
 							Cancel
 						</Link>
 						<button
 							type="submit"
-							disabled={loading}
+							disabled={loading || loadingQuiz}
 							className="px-6 py-3 bg-[#FF446D] text-white rounded-lg font-medium hover:brightness-110 disabled:bg-white/20 disabled:cursor-not-allowed transition"
 						>
-							{loading ? "Creating..." : "Create Quiz"}
+							{loading
+								? editId
+									? "Updating..."
+									: "Creating..."
+								: editId
+								? "Update Quiz"
+								: "Create Quiz"}
 						</button>
 					</div>
 				</form>

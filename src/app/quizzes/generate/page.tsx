@@ -17,6 +17,7 @@ export default function GenerateQuizPage() {
 	const router = useRouter();
 
 	// Form state
+	const [inputMode, setInputMode] = useState<"text" | "pdf">("text");
 	const [content, setContent] = useState("");
 	const [file, setFile] = useState<File | null>(null);
 	const [questionCount, setQuestionCount] = useState(5);
@@ -396,40 +397,80 @@ export default function GenerateQuizPage() {
 
 				{/* Generation Form */}
 				<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8">
-					{/* File Upload */}
-					<div className="mb-6">
-						<label className="block text-white/90 font-medium mb-2">
-							Upload PDF (Optional)
+					{/* Input Mode Toggle */}
+					<div className="mb-8">
+						<label className="block text-white/90 font-medium mb-4">
+							Choose Input Method
 						</label>
-						<input
-							type="file"
-							accept=".pdf"
-							onChange={(e) => setFile(e.target.files?.[0] || null)}
-							className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF446D] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF446D] file:text-white hover:file:bg-[#FF446D]/80"
-						/>
-						<p className="text-white/50 text-sm mt-2">
-							Upload a PDF to generate questions from its content.
-						</p>
+						<div className="flex gap-4 p-2 bg-white/5 rounded-xl border border-white/10">
+							<button
+								onClick={() => {
+									setInputMode("text");
+									setFile(null);
+								}}
+								className={`flex-1 py-3 px-6 rounded-lg font-semibold transition ${
+									inputMode === "text"
+										? "bg-[#FF446D] text-white"
+										: "text-white/70 hover:text-white hover:bg-white/5"
+								}`}
+							>
+								📝 Text Input
+							</button>
+							<button
+								onClick={() => {
+									setInputMode("pdf");
+									setContent("");
+								}}
+								className={`flex-1 py-3 px-6 rounded-lg font-semibold transition ${
+									inputMode === "pdf"
+										? "bg-[#FF446D] text-white"
+										: "text-white/70 hover:text-white hover:bg-white/5"
+								}`}
+							>
+								📄 PDF Upload
+							</button>
+						</div>
 					</div>
 
-					{/* Content Input */}
-					<div className="mb-6">
-						<label className="block text-white/90 font-medium mb-2">
-							Content / Topic Description *
-						</label>
-						<textarea
-							value={content}
-							onChange={(e) => setContent(e.target.value)}
-							placeholder="Paste your course notes, lecture content, or topic description here. The more detailed, the better the questions! (minimum 100 characters)"
-							rows={12}
-							className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF446D] placeholder:text-white/40"
-							required={!file}
-						/>
-						<p className="text-white/50 text-sm mt-2">
-							{content.length} characters (minimum 100 required if no PDF
-							uploaded)
-						</p>
-					</div>
+					{/* Conditional Input Fields */}
+					{inputMode === "pdf" ? (
+						<div className="mb-6">
+							<label className="block text-white/90 font-medium mb-2">
+								Upload PDF *
+							</label>
+							<input
+								type="file"
+								accept=".pdf"
+								onChange={(e) => setFile(e.target.files?.[0] || null)}
+								className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF446D] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#FF446D] file:text-white hover:file:bg-[#FF446D]/80"
+							/>
+							{file && (
+								<p className="text-green-400 text-sm mt-2">
+									✓ Selected: {file.name}
+								</p>
+							)}
+							<p className="text-white/50 text-sm mt-2">
+								Upload a PDF document to generate quiz questions from its
+								content.
+							</p>
+						</div>
+					) : (
+						<div className="mb-6">
+							<label className="block text-white/90 font-medium mb-2">
+								Content / Topic Description *
+							</label>
+							<textarea
+								value={content}
+								onChange={(e) => setContent(e.target.value)}
+								placeholder="Paste your course notes, lecture content, or topic description here. The more detailed, the better the questions! (minimum 100 characters)"
+								rows={12}
+								className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF446D] placeholder:text-white/40"
+							/>
+							<p className="text-white/50 text-sm mt-2">
+								{content.length} characters (minimum 100 required)
+							</p>
+						</div>
+					)}
 
 					{/* Settings Row */}
 					<div className="grid md:grid-cols-2 gap-6 mb-6">
@@ -484,7 +525,11 @@ export default function GenerateQuizPage() {
 					{/* Generate Button */}
 					<button
 						onClick={handleGenerate}
-						disabled={generating || (!file && content.length < 100)}
+						disabled={
+							generating ||
+							(inputMode === "text" && content.length < 100) ||
+							(inputMode === "pdf" && !file)
+						}
 						className="w-full bg-[#FF446D] text-white py-4 rounded-lg font-semibold text-lg hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-3"
 					>
 						{generating ? (

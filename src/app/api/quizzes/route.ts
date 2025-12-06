@@ -140,17 +140,29 @@ export async function GET(request: Request) {
 		const page = Math.max(parseInt(searchParams.get("page") || "1"), 1);
 		const tagsParam = searchParams.get("tags");
 		const tags = tagsParam ? tagsParam.split(",") : [];
+		const mineOnly = searchParams.get("mine") === "true";
 
 		// 3️⃣ BUILD QUERY
 		await dbConnect();
 
 		const query: any = {};
 
-		// Show public quizzes OR user's own quizzes
-		if (isLoggedIn) {
-			query.$or = [{ visibility: "public" }, { ownerId: userId }];
+		// If requesting only user's quizzes
+		if (mineOnly) {
+			if (!isLoggedIn) {
+				return NextResponse.json(
+					{ error: "Authentication required to view your quizzes" },
+					{ status: 401 }
+				);
+			}
+			query.ownerId = userId;
 		} else {
-			query.visibility = "public";
+			// Show public quizzes OR user's own quizzes
+			if (isLoggedIn) {
+				query.$or = [{ visibility: "public" }, { ownerId: userId }];
+			} else {
+				query.visibility = "public";
+			}
 		}
 
 		// Filter by tags if provided
