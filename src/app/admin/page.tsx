@@ -152,131 +152,165 @@ export default function AdminPage() {
 	}
 
 	return (
-		<div className="relative min-h-screen bg-[#111111] py-12 px-4">
-			{/* Background Glows */}
-			<div
-				className="absolute -z-10 left-1/4 top-12 w-[480px] h-[480px] rounded-full opacity-70 blur-3xl pointer-events-none"
-				style={{
-					background:
-						"radial-gradient(circle, #FF446D 0%, rgba(255,68,109,0.25) 40%, transparent 70%)",
-				}}
-			/>
-			<div
-				className="absolute -z-20 right-0 top-40 w-[360px] h-[360px] rounded-full opacity-60 blur-2xl pointer-events-none"
-				style={{
-					background:
-						"radial-gradient(circle, #7C3AED 0%, rgba(124,58,237,0.2) 40%, transparent 70%)",
-				}}
-			/>
-
+		<div className="min-h-screen bg-[#0f0f12] py-12 px-4 sm:px-6 lg:px-8">
 			<div className="max-w-7xl mx-auto">
 				{/* Header */}
-				<div className="mb-8">
+				<div className="mb-10">
 					<Link
 						href="/"
-						className="text-[#FF446D] hover:brightness-110 text-sm font-medium"
+						className="inline-flex items-center gap-2 text-[#FF446D] hover:text-[#FF446D]/80 text-sm font-medium transition mb-4"
 					>
-						← Back to Home
+						<svg
+							className="w-4 h-4"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M15 19l-7-7 7-7"
+							/>
+						</svg>
+						Back to Home
 					</Link>
-					<h1 className="text-4xl font-bold text-white mt-4">
-						Admin Dashboard
-					</h1>
-					<p className="text-white/70 mt-2">
+					<h1 className="text-5xl font-bold text-white">Admin Dashboard</h1>
+					<p className="text-white/60 mt-3 text-lg">
 						Manage users and monitor platform activity
 					</p>
 				</div>
 
 				{/* Stats Cards */}
-				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-					<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-						<h3 className="text-white/70 text-sm font-medium">Total Users</h3>
-						<p className="text-3xl font-bold text-white mt-2">{users.length}</p>
+				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+					<div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-7 hover:bg-white/[0.08] transition">
+						<div className="flex items-center justify-between">
+							<div>
+								<p className="text-white/60 text-sm font-medium uppercase tracking-wide">
+									Total Users
+								</p>
+								<p className="text-4xl font-bold text-white mt-3">
+									{users.length}
+								</p>
+							</div>
+							<div className="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-2xl">
+								👥
+							</div>
+						</div>
 					</div>
 
-					<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-						<h3 className="text-white/70 text-sm font-medium">Total Quizzes</h3>
-						<p className="text-3xl font-bold text-white mt-2">
-							{quizzes.length}
-						</p>
+					<div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-7 hover:bg-white/[0.08] transition">
+						<div className="flex items-center justify-between">
+							<div>
+								<p className="text-white/60 text-sm font-medium uppercase tracking-wide">
+									Total Quizzes
+								</p>
+								<p className="text-4xl font-bold text-white mt-3">
+									{quizzes.length}
+								</p>
+							</div>
+							<div className="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center text-2xl">
+								📝
+							</div>
+						</div>
 					</div>
 
-					<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-						<h3 className="text-white/70 text-sm font-medium">
-							Avg Quizzes/User
-						</h3>
-						<p className="text-3xl font-bold text-white mt-2">
-							{users.length > 0
-								? (quizzes.length / users.length).toFixed(1)
-								: 0}
-						</p>
+					<div className="bg-white/[0.05] border border-white/[0.08] rounded-xl p-7 hover:bg-white/[0.08] transition">
+						<div className="flex items-center justify-between">
+							<div>
+								<p className="text-white/60 text-sm font-medium uppercase tracking-wide">
+									Avg Quizzes/User
+								</p>
+								<p className="text-4xl font-bold text-white mt-3">
+									{users.length > 0
+										? (quizzes.length / users.length).toFixed(1)
+										: 0}
+								</p>
+							</div>
+							<div className="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center text-2xl">
+								📊
+							</div>
+						</div>
 					</div>
 				</div>
 
-				{/* Tabs */}
-				<div className="flex gap-2 mb-6 bg-white/5 p-2 rounded-xl border border-white/10">
-					<button
-						onClick={() => setActiveTab("users")}
-						className={`flex-1 py-3 px-6 rounded-lg font-semibold transition ${
-							activeTab === "users"
-								? "bg-[#FF446D] text-white"
-								: "text-white/70 hover:text-white hover:bg-white/5"
-						}`}
-					>
-						👥 Users ({users.length})
-					</button>
-					<button
-						onClick={() => setActiveTab("quizzes")}
-						className={`flex-1 py-3 px-6 rounded-lg font-semibold transition ${
-							activeTab === "quizzes"
-								? "bg-[#FF446D] text-white"
-								: "text-white/70 hover:text-white hover:bg-white/5"
-						}`}
-					>
-						📝 Quizzes ({quizzes.length})
-					</button>
-				</div>
+				{/* Tabs and Search */}
+				<div className="mb-8 space-y-6">
+					<div className="flex gap-3 border-b border-white/10">
+						<button
+							onClick={() => setActiveTab("users")}
+							className={`py-4 px-6 font-semibold transition border-b-2 -mb-px ${
+								activeTab === "users"
+									? "border-[#FF446D] text-white"
+									: "border-transparent text-white/60 hover:text-white"
+							}`}
+						>
+							👥 Users ({users.length})
+						</button>
+						<button
+							onClick={() => setActiveTab("quizzes")}
+							className={`py-4 px-6 font-semibold transition border-b-2 -mb-px ${
+								activeTab === "quizzes"
+									? "border-[#FF446D] text-white"
+									: "border-transparent text-white/60 hover:text-white"
+							}`}
+						>
+							📝 Quizzes ({quizzes.length})
+						</button>
+					</div>
 
-				{/* Search */}
-				<div className="mb-6">
-					<input
-						type="text"
-						placeholder="Search users by name or email..."
-						value={searchQuery}
-						onChange={(e) => setSearchQuery(e.target.value)}
-						className="w-full px-4 py-3 bg-white/10 border border-white/20 text-white rounded-lg focus:ring-2 focus:ring-[#FF446D] outline-none placeholder:text-white/40"
-					/>
+					{/* Search */}
+					<div>
+						<label className="block text-white/60 text-sm font-medium mb-3">
+							Search
+						</label>
+						<input
+							type="text"
+							placeholder={
+								activeTab === "users"
+									? "Search by name or email..."
+									: "Search by title or owner..."
+							}
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							className="w-full px-4 py-3 bg-white/5 border border-white/10 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF446D] placeholder:text-white/40 transition"
+						/>
+					</div>
 				</div>
 
 				{/* Content based on active tab */}
 				{activeTab === "users" ? (
-					<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+					<div className="bg-white/[0.05] border border-white/[0.08] rounded-xl overflow-hidden">
 						<div className="overflow-x-auto">
 							<table className="w-full">
-								<thead className="bg-white/5">
+								<thead className="bg-white/[0.08] border-b border-white/[0.08]">
 									<tr>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											User
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Email
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Role
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Quizzes
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Joined
 										</th>
 									</tr>
 								</thead>
-								<tbody className="divide-y divide-white/10">
+								<tbody className="divide-y divide-white/[0.08]">
 									{filteredUsers.map((user) => (
-										<tr key={user._id} className="hover:bg-white/5 transition">
+										<tr
+											key={user._id}
+											className="hover:bg-white/[0.08] transition"
+										>
 											<td className="px-6 py-4 whitespace-nowrap">
 												<div className="flex items-center gap-3">
-													<div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#FF446D] to-[#7C3AED] flex items-center justify-center text-white font-bold">
+													<div className="w-10 h-10 rounded-lg bg-[#FF446D]/20 flex items-center justify-center text-white font-bold text-sm">
 														{user.name.charAt(0).toUpperCase()}
 													</div>
 													<span className="text-white font-medium">
@@ -289,15 +323,15 @@ export default function AdminPage() {
 												<span
 													className={`px-3 py-1 rounded-full text-xs font-medium ${
 														user.role === "admin"
-															? "bg-purple-500/20 text-purple-300"
-															: "bg-blue-500/20 text-blue-300"
+															? "bg-purple-500/15 text-purple-200"
+															: "bg-blue-500/15 text-blue-200"
 													}`}
 												>
 													{user.role}
 												</span>
 											</td>
 											<td className="px-6 py-4">
-												<span className="px-3 py-1 bg-[#FF446D]/20 text-[#FF446D] rounded-full text-sm font-medium">
+												<span className="px-3 py-1 bg-white/10 text-white rounded text-sm font-medium">
 													{user.quizCount}
 												</span>
 											</td>
@@ -315,44 +349,47 @@ export default function AdminPage() {
 						</div>
 
 						{filteredUsers.length === 0 && (
-							<div className="text-center py-12">
-								<p className="text-white/50">
+							<div className="text-center py-16">
+								<p className="text-white/50 text-lg">
 									{searchQuery ? "No users found" : "No users yet"}
 								</p>
 							</div>
 						)}
 					</div>
 				) : (
-					<div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+					<div className="bg-white/[0.05] border border-white/[0.08] rounded-xl overflow-hidden">
 						<div className="overflow-x-auto">
 							<table className="w-full">
-								<thead className="bg-white/5">
+								<thead className="bg-white/[0.08] border-b border-white/[0.08]">
 									<tr>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Quiz
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Owner
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Questions
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Visibility
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Created
 										</th>
-										<th className="px-6 py-4 text-left text-xs font-medium text-white/70 uppercase tracking-wider">
+										<th className="px-6 py-4 text-left text-xs font-semibold text-white/70 uppercase tracking-wider">
 											Actions
 										</th>
 									</tr>
 								</thead>
-								<tbody className="divide-y divide-white/10">
+								<tbody className="divide-y divide-white/[0.08]">
 									{filteredQuizzes.map((quiz) => (
-										<tr key={quiz._id} className="hover:bg-white/5 transition">
+										<tr
+											key={quiz._id}
+											className="hover:bg-white/[0.08] transition"
+										>
 											<td className="px-6 py-4">
-												<div className="max-w-xs">
+												<div className="max-w-sm">
 													<div className="text-white font-medium truncate">
 														{quiz.title}
 													</div>
@@ -362,36 +399,43 @@ export default function AdminPage() {
 														</div>
 													)}
 													{quiz.tags.length > 0 && (
-														<div className="flex flex-wrap gap-1 mt-2">
-															{quiz.tags.slice(0, 3).map((tag, idx) => (
+														<div className="flex flex-wrap gap-1.5 mt-2">
+															{quiz.tags.slice(0, 2).map((tag, idx) => (
 																<span
 																	key={idx}
-																	className="px-2 py-0.5 bg-white/10 text-white/60 text-xs rounded-full"
+																	className="px-2 py-0.5 bg-white/5 text-white/60 text-xs rounded"
 																>
 																	{tag}
 																</span>
 															))}
+															{quiz.tags.length > 2 && (
+																<span className="text-white/50 text-xs">
+																	+{quiz.tags.length - 2}
+																</span>
+															)}
 														</div>
 													)}
 												</div>
 											</td>
 											<td className="px-6 py-4">
-												<div className="text-white/90">{quiz.ownerName}</div>
+												<div className="text-white/90 font-medium">
+													{quiz.ownerName}
+												</div>
 												<div className="text-white/50 text-sm">
 													{quiz.ownerEmail}
 												</div>
 											</td>
 											<td className="px-6 py-4">
-												<span className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm font-medium">
+												<span className="px-3 py-1 bg-white/10 text-white rounded text-sm font-medium">
 													{quiz.questionCount}
 												</span>
 											</td>
 											<td className="px-6 py-4">
 												<span
-													className={`px-3 py-1 rounded-full text-xs font-medium ${
+													className={`px-3 py-1 rounded text-xs font-medium ${
 														quiz.visibility === "public"
-															? "bg-green-500/20 text-green-300"
-															: "bg-orange-500/20 text-orange-300"
+															? "bg-green-500/15 text-green-200"
+															: "bg-orange-500/15 text-orange-200"
 													}`}
 												>
 													{quiz.visibility === "public"
@@ -410,20 +454,20 @@ export default function AdminPage() {
 												<div className="flex gap-2">
 													<Link
 														href={`/quizzes/${quiz._id}`}
-														className="px-3 py-1.5 bg-[#FF446D] text-white text-xs font-medium rounded-lg hover:brightness-110 transition"
+														className="px-3 py-1.5 bg-[#FF446D] text-white text-xs font-semibold rounded transition hover:bg-[#FF446D]/90"
 													>
 														View
 													</Link>
 													<Link
 														href={`/quizzes/create?edit=${quiz._id}`}
-														className="px-3 py-1.5 bg-white/10 text-white text-xs font-medium rounded-lg hover:bg-white/20 transition"
+														className="px-3 py-1.5 bg-white/10 text-white text-xs font-semibold rounded transition hover:bg-white/20"
 													>
 														Edit
 													</Link>
 													<button
 														onClick={() => handleDeleteQuiz(quiz._id)}
 														disabled={deleteLoading === quiz._id}
-														className="px-3 py-1.5 bg-red-500/20 text-red-300 text-xs font-medium rounded-lg hover:bg-red-500/30 transition disabled:opacity-50"
+														className="px-3 py-1.5 bg-red-500/15 text-red-300 text-xs font-semibold rounded transition hover:bg-red-500/25 disabled:opacity-50"
 													>
 														{deleteLoading === quiz._id ? "..." : "Delete"}
 													</button>
@@ -436,8 +480,8 @@ export default function AdminPage() {
 						</div>
 
 						{filteredQuizzes.length === 0 && (
-							<div className="text-center py-12">
-								<p className="text-white/50">
+							<div className="text-center py-16">
+								<p className="text-white/50 text-lg">
 									{searchQuery ? "No quizzes found" : "No quizzes yet"}
 								</p>
 							</div>
@@ -447,16 +491,34 @@ export default function AdminPage() {
 
 				{/* Results Info */}
 				{searchQuery && (
-					<div className="mt-4 text-center text-white/60 text-sm">
-						{activeTab === "users" ? (
-							<>
-								Showing {filteredUsers.length} of {users.length} users
-							</>
-						) : (
-							<>
-								Showing {filteredQuizzes.length} of {quizzes.length} quizzes
-							</>
-						)}
+					<div className="mt-6 p-4 bg-white/5 border border-white/10 rounded-lg text-center">
+						<p className="text-white/60 text-sm">
+							{activeTab === "users" ? (
+								<>
+									Showing{" "}
+									<span className="text-white font-semibold">
+										{filteredUsers.length}
+									</span>{" "}
+									of{" "}
+									<span className="text-white font-semibold">
+										{users.length}
+									</span>{" "}
+									users
+								</>
+							) : (
+								<>
+									Showing{" "}
+									<span className="text-white font-semibold">
+										{filteredQuizzes.length}
+									</span>{" "}
+									of{" "}
+									<span className="text-white font-semibold">
+										{quizzes.length}
+									</span>{" "}
+									quizzes
+								</>
+							)}
+						</p>
 					</div>
 				)}
 			</div>
